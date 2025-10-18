@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/kiv-lang/kiv/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: Documentation
+    url: https://kiv-lang.github.io/docs/
+    about: Check our documentation for answers
+  - name: Security Vulnerability
+    url: https://github.com/kiv-lang/kiv/security/advisories/new
+    about: Report a security vulnerability (please don't use public issues)

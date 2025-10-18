@@ -1,0 +1,10 @@
+[package]
+name = "kivc"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "kivc"
+path = "src/main.rs"

@@ -1,0 +1,118 @@
+# Issue and PR Labels for Kiv
+# This file can be used with github-label-sync to manage labels
+
+- name: "bug"
+  color: "d73a4a"
+  description: "Something isn't working"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "New feature or request"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "Improvements or additions to documentation"
+
+- name: "performance"
+  color: "ff6b6b"
+  description: "Performance related issue"
+
+- name: "security"
+  color: "ff0000"
+  description: "Security related issue"
+
+- name: "good first issue"
+  color: "7057ff"
+  description: "Good for newcomers"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+
+- name: "priority:high"
+  color: "ff9500"
+  description: "High priority issue"
+
+- name: "priority:critical"
+  color: "b60205"
+  description: "Critical priority issue"
+
+- name: "priority:low"
+  color: "0e8a16"
+  description: "Low priority issue"
+
+- name: "area:compiler"
+  color: "f9d0c4"
+  description: "Compiler related"
+
+- name: "area:parser"
+  color: "f9d0c4"
+  description: "Parser related"
+
+- name: "area:typeck"
+  color: "f9d0c4"
+  description: "Type checker related"
+
+- name: "area:codegen"
+  color: "f9d0c4"
+  description: "Code generation related"
+
+- name: "area:runtime"
+  color: "f9d0c4"
+  description: "Runtime related"
+
+- name: "area:std"
+  color: "f9d0c4"
+  description: "Standard library related"
+
+- name: "area:tools"
+  color: "f9d0c4"
+  description: "Tools related"
+
+- name: "area:docs"
+  color: "f9d0c4"
+  description: "Documentation related"
+
+- name: "area:ci"
+  color: "f9d0c4"
+  description: "CI/CD related"
+
+- name: "breaking-change"
+  color: "b60205"
+  description: "Introduces a breaking change"
+
+- name: "needs-triage"
+  color: "fbca04"
+  description: "Needs to be triaged"
+
+- name: "stale"
+  color: "ffffff"
+  description: "Stale issue or PR"
+
+- name: "dependencies"
+  color: "0366d6"
+  description: "Dependency related"
+
+- name: "github-actions"
+  color: "2088ff"
+  description: "GitHub Actions related"
+
+- name: "automated"
+  color: "c5def5"
+  description: "Automated change"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or pull request already exists"
+
+- name: "invalid"
+  color: "e4e669"
+  description: "This doesn't seem right"
+
+- name: "question"
+  color: "d876e3"
+  description: "Further information is requested"

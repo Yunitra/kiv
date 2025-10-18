@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    "compiler/kivc",
+    "driver",
+    "tools/kiv-lsp",
+    "tools/kiv-formatter",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+authors = ["The Kiv Project Contributors"]
+edition = "2024"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/kiv-lang/kiv"
+repository = "https://github.com/kiv-lang/kiv"

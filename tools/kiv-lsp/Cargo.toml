@@ -1,0 +1,10 @@
+[package]
+name = "kiv-lsp"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "kiv-lsp"
+path = "src/main.rs"

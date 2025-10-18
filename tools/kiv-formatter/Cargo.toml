@@ -1,0 +1,10 @@
+[package]
+name = "kiv-formatter"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "kiv-fmt"
+path = "src/main.rs"
