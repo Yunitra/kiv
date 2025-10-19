@@ -11,7 +11,7 @@ mod optimize;
 pub use block::{BasicBlock, BlockId};
 pub use lower::lower_to_mir;
 pub use mir::{MirFunction, MirInstr, MirOperand, MirProgram, MirTerminator};
-pub use optimize::{optimize_program, OptLevel};
+pub use optimize::{OptLevel, optimize_program};
 
 // Re-export commonly used types from dependencies
 pub use kivc_ast::{BinOp, Literal};

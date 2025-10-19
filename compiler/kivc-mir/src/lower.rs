@@ -127,6 +127,32 @@ impl MirLowerer {
                     return (current_block, last_value);
                 }
 
+                HirStmtKind::While { .. } => {
+                    // TODO: Implement multi-block control flow for while loops
+                    // For now, treat as no-op to allow compilation
+                    current_block.push_instr(MirInstr::Nop);
+                }
+
+                HirStmtKind::For { .. } => {
+                    // TODO: Implement multi-block control flow for for loops
+                    // For now, treat as no-op to allow compilation
+                    current_block.push_instr(MirInstr::Nop);
+                }
+
+                HirStmtKind::Break => {
+                    // TODO: Implement loop break with proper target block
+                    // For now, treat as unreachable
+                    current_block.terminator = MirTerminator::Unreachable;
+                    return (current_block, last_value);
+                }
+
+                HirStmtKind::Continue => {
+                    // TODO: Implement loop continue with proper target block
+                    // For now, treat as unreachable
+                    current_block.terminator = MirTerminator::Unreachable;
+                    return (current_block, last_value);
+                }
+
                 HirStmtKind::Expr { expr } => {
                     // Evaluate expression for side effects
                     let _ = self.lower_expr_to_operand(&expr, &mut current_block);
@@ -192,6 +218,45 @@ impl MirLowerer {
                     source: value_op,
                 });
 
+                MirOperand::Unit
+            }
+
+            HirExprKind::Match { .. } => {
+                // TODO: Implement match expression lowering
+                // For now, return Unit
+                MirOperand::Unit
+            }
+
+            HirExprKind::Block(inner_block) => {
+                // Lower the inner block inline
+                for stmt in &inner_block.stmts {
+                    match &stmt.kind {
+                        HirStmtKind::Let { var_id, init, .. } => {
+                            let operand = self.lower_expr_to_operand(init, block);
+                            block.push_instr(MirInstr::Assign {
+                                dest: *var_id,
+                                source: operand,
+                            });
+                        }
+                        HirStmtKind::Const { var_id, value, .. } => {
+                            let operand = self.lower_expr_to_operand(value, block);
+                            block.push_instr(MirInstr::Assign {
+                                dest: *var_id,
+                                source: operand,
+                            });
+                        }
+                        HirStmtKind::Expr { expr } => {
+                            let _ = self.lower_expr_to_operand(expr, block);
+                        }
+                        HirStmtKind::Return { .. }
+                        | HirStmtKind::While { .. }
+                        | HirStmtKind::For { .. }
+                        | HirStmtKind::Break
+                        | HirStmtKind::Continue => {
+                            // These require special handling
+                        }
+                    }
+                }
                 MirOperand::Unit
             }
 

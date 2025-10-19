@@ -151,6 +151,15 @@ fn collect_usages(block: &HirBlock, used: &mut HashSet<VarId>) {
                     collect_usages_from_expr(value, used);
                 }
             }
+            HirStmtKind::While { condition, body } => {
+                collect_usages_from_expr(condition, used);
+                collect_usages(body, used);
+            }
+            HirStmtKind::For { iterable, body, .. } => {
+                collect_usages_from_expr(iterable, used);
+                collect_usages(body, used);
+            }
+            HirStmtKind::Break | HirStmtKind::Continue => {}
             HirStmtKind::Expr { expr } => {
                 collect_usages_from_expr(expr, used);
             }
@@ -177,6 +186,15 @@ fn collect_usages_from_expr(expr: &HirExpr, used: &mut HashSet<VarId>) {
             if let Some(else_branch) = else_branch {
                 collect_usages(else_branch, used);
             }
+        }
+        HirExprKind::Match { value, arms } => {
+            collect_usages_from_expr(value, used);
+            for arm in arms {
+                collect_usages_from_expr(&arm.body, used);
+            }
+        }
+        HirExprKind::Block(block) => {
+            collect_usages(block, used);
         }
         HirExprKind::Call { args, .. } => {
             for arg in args {
@@ -223,6 +241,15 @@ fn check_unreachable_in_block(block: &HirBlock, diagnostics: &mut DiagnosticsCol
                     check_unreachable_in_expr(value, diagnostics);
                 }
             }
+            HirStmtKind::While { condition, body } => {
+                check_unreachable_in_expr(condition, diagnostics);
+                check_unreachable_in_block(body, diagnostics);
+            }
+            HirStmtKind::For { iterable, body, .. } => {
+                check_unreachable_in_expr(iterable, diagnostics);
+                check_unreachable_in_block(body, diagnostics);
+            }
+            HirStmtKind::Break | HirStmtKind::Continue => {}
         }
     }
 }
@@ -238,6 +265,14 @@ fn check_unreachable_in_expr(expr: &HirExpr, diagnostics: &mut DiagnosticsCollec
             if let Some(else_branch) = else_branch {
                 check_unreachable_in_block(else_branch, diagnostics);
             }
+        }
+        HirExprKind::Match { arms, .. } => {
+            for arm in arms {
+                check_unreachable_in_expr(&arm.body, diagnostics);
+            }
+        }
+        HirExprKind::Block(block) => {
+            check_unreachable_in_block(block, diagnostics);
         }
         HirExprKind::Binary { lhs, rhs, .. } => {
             check_unreachable_in_expr(lhs, diagnostics);
@@ -264,6 +299,15 @@ fn check_redundant_else_in_block(block: &HirBlock, diagnostics: &mut Diagnostics
             HirStmtKind::Const { value, .. } => {
                 check_redundant_else_in_expr(value, diagnostics);
             }
+            HirStmtKind::While { condition, body } => {
+                check_redundant_else_in_expr(condition, diagnostics);
+                check_redundant_else_in_block(body, diagnostics);
+            }
+            HirStmtKind::For { iterable, body, .. } => {
+                check_redundant_else_in_expr(iterable, diagnostics);
+                check_redundant_else_in_block(body, diagnostics);
+            }
+            HirStmtKind::Break | HirStmtKind::Continue => {}
             HirStmtKind::Return { value } => {
                 if let Some(value) = value {
                     check_redundant_else_in_expr(value, diagnostics);

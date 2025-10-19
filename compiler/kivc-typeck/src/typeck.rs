@@ -163,6 +163,45 @@ impl TypeChecker {
                 }
             }
 
+            HirStmtKind::While { condition, body } => {
+                *condition = self.check_expr(condition.clone());
+
+                // Condition must be boolean
+                let cond_type = self.infer_expr_type(condition);
+                if cond_type != Type::Bool && cond_type != Type::Unknown {
+                    self.diagnostics.add(KivError::type_error(
+                        &condition.span,
+                        format!("while condition must be Bool, found {}", cond_type.name()),
+                        "expected Bool",
+                        None,
+                        kivc_diagnostics::error_code::E001_UNEXPECTED_TOKEN,
+                    ));
+                }
+
+                *body = self.check_block(body.clone());
+            }
+
+            HirStmtKind::For {
+                var_id,
+                iterable,
+                body,
+                ..
+            } => {
+                *iterable = self.check_expr(iterable.clone());
+
+                // TODO: Check that iterable is actually iterable
+                // For now, assume it's valid and the variable has Unknown type
+                self.var_types.insert(*var_id, Type::Unknown);
+                self.var_mutability.insert(*var_id, false);
+
+                *body = self.check_block(body.clone());
+            }
+
+            HirStmtKind::Break | HirStmtKind::Continue => {
+                // TODO: Verify we're inside a loop
+                // For now, accept these statements
+            }
+
             HirStmtKind::Expr { expr } => {
                 *expr = self.check_expr(expr.clone());
             }
@@ -290,6 +329,21 @@ impl TypeChecker {
                     *else_b = self.check_block(else_b.clone());
                 }
             }
+
+            HirExprKind::Match { value, arms } => {
+                **value = self.check_expr(*value.clone());
+
+                // Check all arms
+                for arm in arms {
+                    arm.body = self.check_expr(arm.body.clone());
+                    // TODO: Check pattern exhaustiveness
+                    // TODO: Check all arms return compatible types
+                }
+            }
+
+            HirExprKind::Block(block) => {
+                *block = self.check_block(block.clone());
+            }
         }
 
         expr
@@ -328,6 +382,10 @@ impl TypeChecker {
             HirExprKind::Assign { .. } => Type::Unit,
 
             HirExprKind::If { .. } => Type::Unknown,
+
+            HirExprKind::Match { .. } => Type::Unknown,
+
+            HirExprKind::Block(_) => Type::Unknown,
         }
     }
 

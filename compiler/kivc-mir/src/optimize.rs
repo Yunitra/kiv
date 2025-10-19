@@ -34,7 +34,7 @@ pub enum OptLevel {
 fn optimize_function(function: &mut MirFunction, opt_level: OptLevel) {
     // Apply optimization passes in order
     constant_fold_function(function);
-    
+
     if opt_level == OptLevel::Aggressive {
         dead_code_elimination(function);
         copy_propagation(function);
@@ -45,7 +45,13 @@ fn optimize_function(function: &mut MirFunction, opt_level: OptLevel) {
 fn constant_fold_function(function: &mut MirFunction) {
     for block in &mut function.blocks {
         for instr in &mut block.instructions {
-            if let MirInstr::BinOp { dest, op, left, right } = instr {
+            if let MirInstr::BinOp {
+                dest,
+                op,
+                left,
+                right,
+            } = instr
+            {
                 if let (MirOperand::Literal(l_lit), MirOperand::Literal(r_lit)) = (left, right) {
                     if let Some(result) = fold_binary_op(*op, l_lit, r_lit) {
                         *instr = MirInstr::Assign {
@@ -91,13 +97,11 @@ fn fold_binary_op(op: BinOp, left: &Literal, right: &Literal) -> Option<Literal>
             };
             Some(Literal::Float(result))
         }
-        (Literal::Bool(l), Literal::Bool(r)) => {
-            match op {
-                BinOp::Eq => Some(Literal::Bool(l == r)),
-                BinOp::NotEq => Some(Literal::Bool(l != r)),
-                _ => None,
-            }
-        }
+        (Literal::Bool(l), Literal::Bool(r)) => match op {
+            BinOp::Eq => Some(Literal::Bool(l == r)),
+            BinOp::NotEq => Some(Literal::Bool(l != r)),
+            _ => None,
+        },
         _ => None,
     }
 }
@@ -131,20 +135,28 @@ fn dead_code_elimination(function: &mut MirFunction) {
                             changed |= mark_operand_used(source, &mut used_vars);
                         }
                     }
-                    MirInstr::BinOp { dest, left, right, .. } => {
+                    MirInstr::BinOp {
+                        dest, left, right, ..
+                    } => {
                         if used_vars.contains(&dest) {
                             changed |= mark_operand_used(left, &mut used_vars);
                             changed |= mark_operand_used(right, &mut used_vars);
                         }
                     }
-                    MirInstr::Call { dest: Some(dest), args, .. } => {
+                    MirInstr::Call {
+                        dest: Some(dest),
+                        args,
+                        ..
+                    } => {
                         if used_vars.contains(&dest) {
                             for arg in args {
                                 changed |= mark_operand_used(arg, &mut used_vars);
                             }
                         }
                     }
-                    MirInstr::Call { dest: None, args, .. } => {
+                    MirInstr::Call {
+                        dest: None, args, ..
+                    } => {
                         // Function calls with no return value (side effects) - keep args
                         for arg in args {
                             changed |= mark_operand_used(arg, &mut used_vars);
@@ -160,9 +172,12 @@ fn dead_code_elimination(function: &mut MirFunction) {
     for block in &mut function.blocks {
         block.instructions.retain(|instr| {
             match instr {
-                MirInstr::Assign { dest, .. } |
-                MirInstr::BinOp { dest, .. } => used_vars.contains(&dest),
-                MirInstr::Call { dest: Some(dest), .. } => used_vars.contains(&dest),
+                MirInstr::Assign { dest, .. } | MirInstr::BinOp { dest, .. } => {
+                    used_vars.contains(&dest)
+                }
+                MirInstr::Call {
+                    dest: Some(dest), ..
+                } => used_vars.contains(&dest),
                 MirInstr::Call { dest: None, .. } => true, // Keep side-effecting calls
                 MirInstr::Nop => false,
             }
@@ -218,11 +233,15 @@ fn copy_propagation(function: &mut MirFunction) {
     }
 }
 
-fn propagate_operand(operand: &MirOperand, copy_map: &HashMap<crate::VarId, MirOperand>) -> MirOperand {
+fn propagate_operand(
+    operand: &MirOperand,
+    copy_map: &HashMap<crate::VarId, MirOperand>,
+) -> MirOperand {
     match operand {
-        MirOperand::Var(var_id) => {
-            copy_map.get(var_id).cloned().unwrap_or_else(|| operand.clone())
-        }
+        MirOperand::Var(var_id) => copy_map
+            .get(var_id)
+            .cloned()
+            .unwrap_or_else(|| operand.clone()),
         _ => operand.clone(),
     }
 }

@@ -15,12 +15,12 @@ impl InternedString {
     pub fn as_str(&self) -> &str {
         &self.0
     }
-    
+
     /// Returns the length
     pub fn len(&self) -> usize {
         self.0.len()
     }
-    
+
     /// Returns true if empty
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
@@ -63,33 +63,33 @@ impl Interner {
             map: Mutex::new(HashMap::new()),
         }
     }
-    
+
     /// Returns the global interner instance
     pub fn global() -> &'static Self {
         static INTERNER: OnceLock<Interner> = OnceLock::new();
         INTERNER.get_or_init(Interner::new)
     }
-    
+
     /// Interns a string, returning a cheap-to-clone handle
     pub fn intern(&self, s: &str) -> InternedString {
         let mut map = self.map.lock().unwrap();
-        
+
         // Try to find existing string
         if let Some((key, _)) = map.get_key_value(s as &str) {
             return InternedString(Arc::clone(key));
         }
-        
+
         // Create new Arc<str> and insert
         let arc: Arc<str> = s.into();
         map.insert(Arc::clone(&arc), ());
         InternedString(arc)
     }
-    
+
     /// Returns the number of interned strings
     pub fn len(&self) -> usize {
         self.map.lock().unwrap().len()
     }
-    
+
     /// Returns true if no strings are interned
     pub fn is_empty(&self) -> bool {
         self.len() == 0
@@ -111,7 +111,7 @@ mod tests {
         let interner = Interner::new();
         let s1 = interner.intern("hello");
         let s2 = interner.intern("hello");
-        
+
         // Same underlying Arc
         assert_eq!(s1, s2);
         assert_eq!(Arc::as_ptr(&s1.0), Arc::as_ptr(&s2.0));
@@ -122,7 +122,7 @@ mod tests {
         let interner = Interner::new();
         let s1 = interner.intern("hello");
         let s2 = interner.intern("world");
-        
+
         assert_ne!(s1, s2);
         assert_ne!(Arc::as_ptr(&s1.0), Arc::as_ptr(&s2.0));
     }

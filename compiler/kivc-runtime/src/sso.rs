@@ -54,12 +54,12 @@ impl Text {
     /// Creates a new Text from a string slice
     pub fn new(s: &str) -> Self {
         let len = s.len();
-        
+
         if len <= INLINE_CAPACITY {
             // Use inline storage
             let mut data = [0u8; INLINE_CAPACITY];
             data[..len].copy_from_slice(s.as_bytes());
-            
+
             Self {
                 repr: TextRepr {
                     inline: InlineText {
@@ -74,9 +74,9 @@ impl Text {
             let capacity = vec.capacity();
             let ptr = vec.as_mut_ptr();
             mem::forget(vec);
-            
+
             let rc = Box::into_raw(Box::new(1usize));
-            
+
             Self {
                 repr: TextRepr {
                     heap: HeapText {
@@ -152,7 +152,7 @@ impl Text {
                 // Increment reference count for heap strings
                 let rc_ptr = (self.repr.heap.rc as usize & !1) as *mut usize;
                 *rc_ptr += 1;
-                
+
                 Self {
                     repr: TextRepr {
                         heap: self.repr.heap,
@@ -169,19 +169,19 @@ impl Text {
                 // Need to make a copy
                 let s = self.as_str();
                 let len = s.len();
-                
+
                 // Decrement old reference count
                 let old_rc_ptr = (self.repr.heap.rc as usize & !1) as *mut usize;
                 *old_rc_ptr -= 1;
-                
+
                 // Create new allocation
                 let mut vec = s.as_bytes().to_vec();
                 let capacity = vec.capacity();
                 let ptr = vec.as_mut_ptr();
                 mem::forget(vec);
-                
+
                 let rc = Box::into_raw(Box::new(1usize));
-                
+
                 self.repr = TextRepr {
                     heap: HeapText {
                         ptr,
@@ -198,29 +198,29 @@ impl Text {
     pub fn concat(&self, other: &Self) -> Self {
         let self_str = self.as_str();
         let other_str = other.as_str();
-        
+
         let new_len = self_str.len() + other_str.len();
         let mut result = String::with_capacity(new_len);
         result.push_str(self_str);
         result.push_str(other_str);
-        
+
         Self::new(&result)
     }
 
     /// Pushes a character to the text (requires uniqueness)
     pub fn push(&mut self, ch: char) {
         self.make_unique();
-        
+
         let mut buf = [0u8; 4];
         let ch_str = ch.encode_utf8(&mut buf);
-        
+
         let current = self.as_str();
         let new_len = current.len() + ch_str.len();
-        
+
         let mut result = String::with_capacity(new_len);
         result.push_str(current);
         result.push_str(ch_str);
-        
+
         *self = Self::new(&result);
     }
 }
@@ -231,7 +231,7 @@ impl Drop for Text {
             if !self.is_inline() {
                 let rc_ptr = (self.repr.heap.rc as usize & !1) as *mut usize;
                 *rc_ptr -= 1;
-                
+
                 if *rc_ptr == 0 {
                     // Free the string data
                     let vec = Vec::from_raw_parts(
@@ -240,7 +240,7 @@ impl Drop for Text {
                         self.repr.heap.capacity,
                     );
                     drop(vec);
-                    
+
                     // Free the reference count
                     drop(Box::from_raw(rc_ptr));
                 }
@@ -300,7 +300,7 @@ mod tests {
     fn test_sso_clone_inline() {
         let text1 = Text::new("hello");
         let text2 = text1.clone();
-        
+
         assert_eq!(text1.as_str(), text2.as_str());
         assert!(text1.is_inline());
         assert!(text2.is_inline());
@@ -312,7 +312,7 @@ mod tests {
         let long_str = "this is a very long string that exceeds inline capacity";
         let text1 = Text::new(long_str);
         let text2 = text1.clone();
-        
+
         assert_eq!(text1.as_str(), text2.as_str());
         assert_eq!(text1.ref_count(), 2);
         assert_eq!(text2.ref_count(), 2);
@@ -323,7 +323,7 @@ mod tests {
         let text1 = Text::new("hello");
         let text2 = Text::new(" world");
         let result = text1.concat(&text2);
-        
+
         assert_eq!(result.as_str(), "hello world");
     }
 
@@ -340,13 +340,13 @@ mod tests {
         let long_str = "this is a very long string that exceeds inline capacity";
         let text1 = Text::new(long_str);
         let mut text2 = text1.clone();
-        
+
         // Before mutation, both share the same data
         assert_eq!(text1.ref_count(), 2);
-        
+
         // Mutate text2
         text2.push('!');
-        
+
         // Now they should be independent
         assert_eq!(text1.ref_count(), 1);
         assert_eq!(text2.ref_count(), 1);
@@ -366,7 +366,7 @@ mod tests {
         // Test at the boundary of inline capacity
         let text23 = Text::new("12345678901234567890123"); // 23 bytes
         assert!(text23.is_inline());
-        
+
         let text24 = Text::new("123456789012345678901234"); // 24 bytes
         assert!(!text24.is_inline());
     }

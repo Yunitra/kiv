@@ -131,6 +131,42 @@ impl Formatter {
                 self.output.push_str(";\n");
             }
 
+            StmtKind::While { condition, body } => {
+                self.output.push_str("while ");
+                self.format_expr(condition);
+                self.output.push_str(" {\n");
+                self.indent_level += 1;
+                self.format_block(body);
+                self.indent_level -= 1;
+                self.write_indent();
+                self.output.push_str("}\n");
+            }
+
+            StmtKind::For {
+                variable,
+                iterable,
+                body,
+            } => {
+                self.output.push_str("for ");
+                self.output.push_str(variable);
+                self.output.push_str(" in ");
+                self.format_expr(iterable);
+                self.output.push_str(" {\n");
+                self.indent_level += 1;
+                self.format_block(body);
+                self.indent_level -= 1;
+                self.write_indent();
+                self.output.push_str("}\n");
+            }
+
+            StmtKind::Break => {
+                self.output.push_str("break;\n");
+            }
+
+            StmtKind::Continue => {
+                self.output.push_str("continue;\n");
+            }
+
             StmtKind::Expr { expr } => {
                 self.format_expr(expr);
                 self.output.push_str(";\n");
@@ -201,6 +237,51 @@ impl Formatter {
             ExprKind::Assign { target, value } => {
                 write!(self.output, "{} = ", target).unwrap();
                 self.format_expr(value);
+            }
+
+            ExprKind::Match { value, arms } => {
+                self.output.push_str("match ");
+                self.format_expr(value);
+                self.output.push_str(" {\n");
+                self.indent_level += 1;
+
+                for arm in arms {
+                    self.write_indent();
+                    self.format_pattern(&arm.pattern);
+                    self.output.push_str(" => ");
+                    self.format_expr(&arm.body);
+                    self.output.push_str(",\n");
+                }
+
+                self.indent_level -= 1;
+                self.write_indent();
+                self.output.push('}');
+            }
+
+            ExprKind::Block(block) => {
+                self.output.push_str("{\n");
+                self.indent_level += 1;
+                self.format_block(block);
+                self.indent_level -= 1;
+                self.write_indent();
+                self.output.push('}');
+            }
+        }
+    }
+
+    /// Formats a pattern
+    fn format_pattern(&mut self, pattern: &kivc_ast::Pattern) {
+        match pattern {
+            kivc_ast::Pattern::Wildcard => self.output.push('_'),
+            kivc_ast::Pattern::Literal(lit) => self.format_literal(lit),
+            kivc_ast::Pattern::Binding(name) => self.output.push_str(name),
+            kivc_ast::Pattern::Or(patterns) => {
+                for (i, p) in patterns.iter().enumerate() {
+                    if i > 0 {
+                        self.output.push_str(" | ");
+                    }
+                    self.format_pattern(p);
+                }
             }
         }
     }
