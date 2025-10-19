@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "compiler/kivc",
+    "compiler/kivc-*",
     "driver",
     "tools/kiv-lsp",
     "tools/kiv-formatter",
@@ -14,3 +15,20 @@ edition = "2024"
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/kiv-lang/kiv"
 repository = "https://github.com/kiv-lang/kiv"
+
+[workspace.dependencies]
+inkwell = { version = "0.6", features = ["llvm18-1"], default-features = false }
+miette = { version = "7", features = ["fancy"] }
+clap = { version = "4", features = ["derive"] }
+thiserror = "2"
+text-size = "1"
+
+kivc-span = { path = "compiler/kivc-span" }
+kivc-diagnostics = { path = "compiler/kivc-diagnostics" }
+kivc-ast = { path = "compiler/kivc-ast" }
+kivc-lexer = { path = "compiler/kivc-lexer" }
+kivc-parser = { path = "compiler/kivc-parser" }
+kivc-typeck = { path = "compiler/kivc-typeck" }
+kivc-hir = { path = "compiler/kivc-hir" }
+kivc-mir = { path = "compiler/kivc-mir" }
+kivc-codegen = { path = "compiler/kivc-codegen" }

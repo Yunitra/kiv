@@ -4,3 +4,13 @@ version.workspace = true
 authors.workspace = true
 edition.workspace = true
 license.workspace = true
+
+[dependencies]
+kivc-span.workspace = true
+kivc-diagnostics.workspace = true
+kivc-hir.workspace = true
+kivc-ast.workspace = true
+
+[dev-dependencies]
+kivc-parser.workspace = true
+kivc-ast.workspace = true

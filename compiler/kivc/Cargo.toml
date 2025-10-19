@@ -5,6 +5,24 @@ authors.workspace = true
 edition.workspace = true
 license.workspace = true
 
+[lib]
+name = "kivc"
+path = "src/lib.rs"
+
 [[bin]]
 name = "kivc"
 path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+miette.workspace = true
+
+kivc-span.workspace = true
+kivc-diagnostics.workspace = true
+kivc-lexer.workspace = true
+kivc-ast.workspace = true
+kivc-parser.workspace = true
+kivc-hir.workspace = true
+kivc-typeck.workspace = true
+kivc-mir.workspace = true
+kivc-codegen.workspace = true

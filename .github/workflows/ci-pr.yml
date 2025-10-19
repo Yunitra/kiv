@@ -78,8 +78,23 @@ jobs:
     - name: Install LLVM (Windows)
       if: runner.os == 'Windows'
       run: |
-        choco install llvm --version=18.1.8 --allow-downgrade --force
-        echo "C:\Program Files\LLVM\bin" >> $GITHUB_PATH
+        # Download LLVM 18.1.8 development kit
+        Invoke-WebRequest -Uri "https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/clang+llvm-18.1.8-x86_64-pc-windows-msvc.tar.xz" -OutFile "llvm.tar.xz"
+        
+        # Extract using 7-Zip (available on GitHub runners)
+        7z x llvm.tar.xz
+        7z x clang+llvm-18.1.8-x86_64-pc-windows-msvc.tar
+        
+        # Move to C:\LLVM
+        Move-Item "clang+llvm-18.1.8-x86_64-pc-windows-msvc" "C:\LLVM"
+        
+        # Set environment variables
+        echo "LLVM_SYS_181_PREFIX=C:\LLVM" >> $env:GITHUB_ENV
+        echo "C:\LLVM\bin" >> $env:GITHUB_PATH
+        
+        # Verify installation
+        C:\LLVM\bin\llvm-config.exe --version
+        C:\LLVM\bin\clang.exe --version
         
     - name: Install LLVM (macOS)
       if: runner.os == 'macOS'

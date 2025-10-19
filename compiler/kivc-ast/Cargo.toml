@@ -4,3 +4,8 @@ version.workspace = true
 authors.workspace = true
 edition.workspace = true
 license.workspace = true
+
+[dependencies]
+kivc-span.workspace = true
+
+[dev-dependencies]

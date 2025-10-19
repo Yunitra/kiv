@@ -74,6 +74,25 @@ let message = if score >= 90 {
 };
 ```
 
+### Statement Termination
+- **Semicolons are optional** and **not recommended**
+- The language is designed to be clean and readable without semicolons
+- Only add semicolons when absolutely necessary for disambiguation
+
+```kiv
+// Preferred style (no semicolons)
+fun add(a: Int, b: Int): Int {
+    let result = a + b
+    return result
+}
+
+// Discouraged style (with semicolons)
+fun add(a: Int, b: Int): Int {
+    let result = a + b;
+    return result;
+}
+```
+
 ### Naming and Built-in Types
 - Built-in types use **PascalCase**: `Int`, `Float`, `Text`, `Bool`
 - Variables/functions: `snake_case`
