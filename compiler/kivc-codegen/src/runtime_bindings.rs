@@ -1,8 +1,8 @@
 //! Runtime function declarations for LLVM.
 
-use inkwell::AddressSpace;
 use inkwell::context::Context;
 use inkwell::module::Module;
+use inkwell::AddressSpace;
 
 /// Declares all runtime functions in the LLVM module
 pub fn declare_runtime_functions<'ctx>(context: &'ctx Context, module: &Module<'ctx>) {

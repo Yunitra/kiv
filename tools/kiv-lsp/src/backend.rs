@@ -1,6 +1,6 @@
 //! LSP backend implementation.
 
-use kivc::{CompileResult, CompilerConfig, StopAfter, compile_source};
+use kivc::{compile_source, CompileResult, CompilerConfig, StopAfter};
 use kivc_diagnostics::KivError;
 use std::collections::HashMap;
 use std::sync::Arc;

@@ -1,9 +1,9 @@
 //! Type mapping from Kiv types to LLVM types.
 
 use crate::error::{CodegenError, CodegenResult};
-use inkwell::AddressSpace;
 use inkwell::context::Context;
 use inkwell::types::{BasicMetadataTypeEnum, BasicTypeEnum};
+use inkwell::AddressSpace;
 use kivc_typeck::Type;
 
 /// Maps a Kiv type to an LLVM type

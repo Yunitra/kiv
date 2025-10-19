@@ -4,6 +4,11 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
+    // Only build the C runtime when the `c-runtime` feature is enabled
+    if std::env::var("CARGO_FEATURE_C_RUNTIME").is_err() {
+        println!("cargo:rerun-if-changed=build.rs");
+        return;
+    }
     let runtime_c = "runtime.c";
 
     // Find target directory (go up from OUT_DIR to find target/debug or target/release)

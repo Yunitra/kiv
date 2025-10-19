@@ -1,7 +1,17 @@
 [workspace]
 members = [
     "compiler/kivc",
-    "compiler/kivc-*",
+    "compiler/kivc-ast",
+    "compiler/kivc-lexer",
+    "compiler/kivc-parser",
+    "compiler/kivc-span",
+    "compiler/kivc-diagnostics",
+    "compiler/kivc-hir",
+    "compiler/kivc-typeck",
+    "compiler/kivc-mir",
+    "compiler/kivc-codegen",
+    "compiler/kivc-resolve",
+    "compiler/kivc-semantic",
     "driver",
     "tools/kiv-*"
 ]
@@ -10,13 +20,12 @@ resolver = "2"
 [workspace.package]
 version = "0.1.0"
 authors = ["The Kiv Project Contributors"]
-edition = "2024"
+edition = "2021"
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/kiv-lang/kiv"
 repository = "https://github.com/kiv-lang/kiv"
 
 [workspace.dependencies]
-inkwell = { version = "0.6", features = ["llvm18-1"], default-features = false }
 miette = { version = "7", features = ["fancy"] }
 clap = { version = "4", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }

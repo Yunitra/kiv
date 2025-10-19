@@ -41,6 +41,12 @@ pub extern "C" fn kiv_print_bool(value: bool) {
     println!("{}", value);
 }
 
+/// Prints a newline (C ABI), for multi-arg print composition.
+#[unsafe(no_mangle)]
+pub extern "C" fn kiv_print_newline() {
+    println!("");
+}
+
 /// Converts an integer to a Text value (C ABI).
 #[unsafe(no_mangle)]
 pub extern "C" fn kiv_int_to_text(value: i64) -> *mut Text {

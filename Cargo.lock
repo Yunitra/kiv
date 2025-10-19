@@ -727,10 +727,6 @@ name = "kivc-resolve"
 version = "0.1.0"
 
 [[package]]
-name = "kivc-runtime"
-version = "0.1.0"
-
-[[package]]
 name = "kivc-semantic"
 version = "0.1.0"
 

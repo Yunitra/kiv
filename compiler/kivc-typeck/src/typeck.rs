@@ -233,16 +233,16 @@ impl TypeChecker {
                 **value = self.check_expr(*value.clone());
 
                 // Check if variable is mutable
-                if let Some(&mutable) = self.var_mutability.get(var_id)
-                    && !mutable
-                {
-                    self.diagnostics.add(KivError::syntax(
-                        &expr.span,
-                        format!("cannot assign to immutable variable '{}'", target),
-                        "not mutable",
-                        Some("consider making it mutable with 'mut'".to_string()),
-                        kivc_diagnostics::error_code::E001_UNEXPECTED_TOKEN,
-                    ));
+                if let Some(&mutable) = self.var_mutability.get(var_id) {
+                    if !mutable {
+                        self.diagnostics.add(KivError::syntax(
+                            &expr.span,
+                            format!("cannot assign to immutable variable '{}'", target),
+                            "not mutable",
+                            Some("consider making it mutable with 'mut'".to_string()),
+                            kivc_diagnostics::error_code::E001_UNEXPECTED_TOKEN,
+                        ));
+                    }
                 }
 
                 // Check type compatibility
