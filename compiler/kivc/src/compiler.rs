@@ -85,7 +85,15 @@ pub fn compile_source(
     }
 
     // Lower to MIR
-    let mir = lower_to_mir(checked_hir);
+    let mut mir = lower_to_mir(checked_hir);
+
+    // Optimize MIR based on optimization level
+    let opt_level = match session.config.opt_level {
+        crate::config::OptLevel::None => kivc_mir::OptLevel::None,
+        crate::config::OptLevel::Basic => kivc_mir::OptLevel::Basic,
+        crate::config::OptLevel::Aggressive => kivc_mir::OptLevel::Aggressive,
+    };
+    mir = kivc_mir::optimize_program(mir, opt_level);
 
     if session.config.stop_after == Some(StopAfter::Mir) {
         return (session, CompileResult::StoppedAtMir(mir.clone()));
