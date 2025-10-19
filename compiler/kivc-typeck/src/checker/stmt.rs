@@ -2,7 +2,7 @@
 
 use super::context::TypeChecker;
 use crate::types::Type;
-use kivc_diagnostics::KivError;
+use kivc_diagnostics::{error_code::ErrorCode, KivError};
 use kivc_hir::{HirBlock, HirStmt, HirStmtKind};
 
 impl TypeChecker {
@@ -123,17 +123,41 @@ impl TypeChecker {
             } => {
                 *iterable = self.check_expr(iterable.clone());
 
-                // TODO: Check that iterable is actually iterable
-                // For now, assume it's valid and the variable has Unknown type
-                self.var_types.insert(*var_id, Type::Unknown);
+                // Check that iterable is iterable
+                // For now, accept any type (future: check for Iterator trait or array type)
+                
+                // Variable has type of iterable elements (assume Int for ranges)
+                self.var_types.insert(*var_id, Type::Int);
                 self.var_mutability.insert(*var_id, false);
 
+                // Enter loop context
+                self.in_loop_depth += 1;
                 *body = self.check_block(body.clone());
+                self.in_loop_depth -= 1;
             }
 
-            HirStmtKind::Break | HirStmtKind::Continue => {
-                // TODO: Verify we're inside a loop
-                // For now, accept these statements
+            HirStmtKind::Break => {
+                if self.in_loop_depth == 0 {
+                    self.diagnostics.add(KivError::syntax(
+                        &stmt.span,
+                        "`break` outside of loop",
+                        "can only use `break` inside a loop",
+                        Some("remove this `break` or place it inside a loop".to_string()),
+                        ErrorCode::new("sem", 1),
+                    ));
+                }
+            }
+
+            HirStmtKind::Continue => {
+                if self.in_loop_depth == 0 {
+                    self.diagnostics.add(KivError::syntax(
+                        &stmt.span,
+                        "`continue` outside of loop",
+                        "can only use `continue` inside a loop",
+                        Some("remove this `continue` or place it inside a loop".to_string()),
+                        ErrorCode::new("sem", 2),
+                    ));
+                }
             }
 
             HirStmtKind::Expr { expr } => {

@@ -11,6 +11,7 @@ pub struct TypeChecker {
     pub(super) var_types: HashMap<VarId, Type>,
     pub(super) var_mutability: HashMap<VarId, bool>,
     pub(super) current_return_type: Option<TypeId>,
+    pub(super) in_loop_depth: usize,
     pub(super) diagnostics: DiagnosticsCollector,
 }
 
@@ -21,6 +22,7 @@ impl TypeChecker {
             var_types: HashMap::new(),
             var_mutability: HashMap::new(),
             current_return_type: None,
+            in_loop_depth: 0,
             diagnostics: DiagnosticsCollector::new(),
         }
     }
