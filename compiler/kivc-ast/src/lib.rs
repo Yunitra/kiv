@@ -8,7 +8,7 @@ mod item;
 mod stmt;
 mod ty;
 
-pub use expr::{BinOp, Expr, ExprKind, Literal};
+pub use expr::{BinOp, Expr, ExprKind, Literal, MatchArm, Pattern};
 pub use item::{FunDef, Param, Program};
 pub use stmt::{Block, Stmt, StmtKind};
 pub use ty::{Type, TypeKind};

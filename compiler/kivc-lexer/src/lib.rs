@@ -5,8 +5,10 @@
 //! keywords, identifiers, literals, and operators, and reports lexical errors
 //! using the `kivc-diagnostics` system.
 
+mod intern;
 mod lexer;
 mod token;
 
+pub use intern::{InternedString, Interner};
 pub use lexer::Lexer;
 pub use token::{Token, TokenKind};

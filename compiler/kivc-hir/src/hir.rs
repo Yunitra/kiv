@@ -66,6 +66,23 @@ pub enum HirStmtKind {
     /// Return statement
     Return { value: Option<HirExpr> },
 
+    /// While loop
+    While { condition: HirExpr, body: HirBlock },
+
+    /// For loop
+    For {
+        var_id: VarId,
+        variable: String,
+        iterable: HirExpr,
+        body: HirBlock,
+    },
+
+    /// Break statement
+    Break,
+
+    /// Continue statement
+    Continue,
+
     /// Expression statement
     Expr { expr: HirExpr },
 }
@@ -110,6 +127,32 @@ pub enum HirExprKind {
         then_branch: HirBlock,
         else_branch: Option<HirBlock>,
     },
+
+    /// Match expression
+    Match {
+        value: Box<HirExpr>,
+        arms: Vec<HirMatchArm>,
+    },
+
+    /// Block expression
+    Block(HirBlock),
+}
+
+/// A match arm in HIR
+#[derive(Debug, Clone)]
+pub struct HirMatchArm {
+    pub pattern: HirPattern,
+    pub body: HirExpr,
+    pub span: Span,
+}
+
+/// A pattern in HIR
+#[derive(Debug, Clone)]
+pub enum HirPattern {
+    Wildcard,
+    Literal(Literal),
+    Binding { var_id: VarId, name: String },
+    Or(Vec<HirPattern>),
 }
 
 impl HirExpr {

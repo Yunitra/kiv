@@ -24,6 +24,10 @@ pub fn parse_stmt(parser: &mut Parser) -> Result<Stmt, KivError> {
         TokenKind::Let => parse_let_stmt(parser),
         TokenKind::Const => parse_const_stmt(parser),
         TokenKind::Return => parse_return_stmt(parser),
+        TokenKind::While => parse_while_stmt(parser),
+        TokenKind::For => parse_for_stmt(parser),
+        TokenKind::Break => parse_break_stmt(parser),
+        TokenKind::Continue => parse_continue_stmt(parser),
         _ => parse_expr_stmt(parser),
     }
 }
@@ -138,6 +142,51 @@ fn parse_expr_stmt(parser: &mut Parser) -> Result<Stmt, KivError> {
         kind: StmtKind::Expr { expr },
         span,
     })
+}
+
+/// Parses a while statement: `while condition { body }`
+fn parse_while_stmt(parser: &mut Parser) -> Result<Stmt, KivError> {
+    let start = parser.advance().span; // consume 'while'
+
+    let condition = parse_expr(parser)?;
+    let body = parse_block(parser)?;
+
+    let span = start.merge(&body.span).unwrap();
+    Ok(Stmt::while_stmt(condition, body, span))
+}
+
+/// Parses a for statement: `for variable in iterable { body }`
+fn parse_for_stmt(parser: &mut Parser) -> Result<Stmt, KivError> {
+    let start = parser.advance().span; // consume 'for'
+
+    let var_token = parser.expect(
+        TokenKind::Ident(String::new()),
+        "expected variable name after 'for'",
+    )?;
+    let variable = match &var_token.kind {
+        TokenKind::Ident(s) => s.clone(),
+        _ => unreachable!(),
+    };
+
+    parser.expect(TokenKind::In, "expected 'in' after variable name")?;
+
+    let iterable = parse_expr(parser)?;
+    let body = parse_block(parser)?;
+
+    let span = start.merge(&body.span).unwrap();
+    Ok(Stmt::for_stmt(variable, iterable, body, span))
+}
+
+/// Parses a break statement: `break`
+fn parse_break_stmt(parser: &mut Parser) -> Result<Stmt, KivError> {
+    let span = parser.advance().span;
+    Ok(Stmt::break_stmt(span))
+}
+
+/// Parses a continue statement: `continue`
+fn parse_continue_stmt(parser: &mut Parser) -> Result<Stmt, KivError> {
+    let span = parser.advance().span;
+    Ok(Stmt::continue_stmt(span))
 }
 
 /// Parses a block: `{ stmt* }`

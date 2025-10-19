@@ -11,21 +11,27 @@
 //!
 //! ## Example
 //!
-//! ```ignore
-//! use kivc_codegen::{CodegenContext, generate_llvm_ir};
-//! use kivc_mir::MirProgram;
-//!
-//! let context = CodegenContext::new("my_module");
-//! let llvm_ir = generate_llvm_ir(&context, &mir_program)?;
+//! ```no_run
+//! # use kivc_codegen::generate_llvm_ir;
+//! # use kivc_mir::{MirProgram, MirFunction};
+//! # use std::collections::HashMap;
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! // Create a MIR program
+//! let mir_program = MirProgram::new(vec![], HashMap::new());
+//! 
+//! // Generate LLVM IR
+//! let llvm_ir = generate_llvm_ir(&mir_program)?;
+//! # Ok(())
+//! # }
 //! ```
 
+mod backend;
 mod error;
-mod llvm_backend;
 mod runtime_bindings;
 mod types;
 
+pub use backend::CodegenContext;
 pub use error::{CodegenError, CodegenResult};
-pub use llvm_backend::CodegenContext;
 
 use inkwell::context::Context;
 use kivc_mir::MirProgram;
@@ -35,7 +41,7 @@ pub fn generate_llvm_ir(program: &MirProgram) -> CodegenResult<String> {
     let context = Context::create();
     let codegen_ctx = CodegenContext::new(&context, "kiv_module");
 
-    llvm_backend::generate_llvm_ir(&codegen_ctx, program)?;
+    backend::generate_llvm_ir(&codegen_ctx, program)?;
 
     let mut ir = codegen_ctx.to_llvm_ir();
 

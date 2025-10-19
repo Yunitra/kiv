@@ -25,6 +25,12 @@ pub enum TokenKind {
     If,
     Else,
     Return,
+    While,
+    For,
+    In,
+    Break,
+    Continue,
+    Match,
     True,
     False,
 
@@ -74,6 +80,12 @@ impl TokenKind {
             TokenKind::If => "if",
             TokenKind::Else => "else",
             TokenKind::Return => "return",
+            TokenKind::While => "while",
+            TokenKind::For => "for",
+            TokenKind::In => "in",
+            TokenKind::Break => "break",
+            TokenKind::Continue => "continue",
+            TokenKind::Match => "match",
             TokenKind::True => "true",
             TokenKind::False => "false",
             TokenKind::IntLit(_) => "integer literal",
@@ -114,6 +126,12 @@ impl TokenKind {
                 | TokenKind::If
                 | TokenKind::Else
                 | TokenKind::Return
+                | TokenKind::While
+                | TokenKind::For
+                | TokenKind::In
+                | TokenKind::Break
+                | TokenKind::Continue
+                | TokenKind::Match
                 | TokenKind::True
                 | TokenKind::False
         )
@@ -130,6 +148,12 @@ pub fn keyword_or_ident(s: &str) -> TokenKind {
         "if" => TokenKind::If,
         "else" => TokenKind::Else,
         "return" => TokenKind::Return,
+        "while" => TokenKind::While,
+        "for" => TokenKind::For,
+        "in" => TokenKind::In,
+        "break" => TokenKind::Break,
+        "continue" => TokenKind::Continue,
+        "match" => TokenKind::Match,
         "true" => TokenKind::True,
         "false" => TokenKind::False,
         _ => TokenKind::Ident(s.to_string()),

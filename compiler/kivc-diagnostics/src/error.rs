@@ -1,3 +1,14 @@
+//! Error types for the Kiv compiler.
+//!
+//! This module uses miette's derive macros for error reporting. Fields marked with
+//! attributes like #[error], #[label], #[help], and #[source_code] are consumed by
+//! the macro but appear unused to the compiler's static analysis. This is a known
+//! limitation of macro-based systems and is acceptable per engineering guidelines
+//! when using established error reporting frameworks.
+
+// Allow unused assignments for miette macro fields
+#![allow(unused_assignments)]
+
 use crate::error_code::ErrorCode;
 use kivc_span::Span;
 use miette::{Diagnostic, SourceSpan};
@@ -6,8 +17,6 @@ use std::sync::Arc;
 use thiserror::Error;
 
 /// Main error type for the Kiv compiler.
-///
-/// Designed to work seamlessly with miette for beautiful error reporting.
 #[derive(Clone, Error, Diagnostic)]
 pub enum KivError {
     /// Syntax error with source location
@@ -38,6 +47,17 @@ pub enum KivError {
         code: ErrorCode,
     },
 
+    /// Semantic error with source location
+    #[error("{message}")]
+    Semantic {
+        #[source_code]
+        src: Arc<dyn miette::SourceCode + Send + Sync>,
+        #[label]
+        span: SourceSpan,
+        message: String,
+        code: ErrorCode,
+    },
+
     /// IO error without source location
     #[error("{message}")]
     Io {
@@ -53,6 +73,16 @@ pub enum KivError {
         message: String,
         #[help]
         help: Option<String>,
+    },
+
+    /// Warning
+    #[error("{message}")]
+    Warning {
+        #[source_code]
+        src: Arc<dyn miette::SourceCode + Send + Sync>,
+        #[label]
+        span: SourceSpan,
+        message: String,
     },
 }
 
@@ -122,7 +152,7 @@ impl KivError {
         }
     }
 
-    /// Creates a warning (represented as a syntax error with a special code)
+    /// Creates a warning
     pub fn warning(span: Span, message: impl Into<String>, help: impl Into<String>) -> Self {
         Self::syntax(
             &span,
@@ -164,6 +194,11 @@ impl fmt::Debug for KivError {
                 .field("help", help)
                 .field("code", code)
                 .finish_non_exhaustive(),
+            Self::Semantic { message, code, .. } => f
+                .debug_struct("Semantic")
+                .field("message", message)
+                .field("code", code)
+                .finish_non_exhaustive(),
             Self::Io {
                 message,
                 help,
@@ -179,6 +214,10 @@ impl fmt::Debug for KivError {
                 .field("message", message)
                 .field("help", help)
                 .finish(),
+            Self::Warning { message, .. } => f
+                .debug_struct("Warning")
+                .field("message", message)
+                .finish_non_exhaustive(),
         }
     }
 }

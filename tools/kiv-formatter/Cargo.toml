@@ -12,5 +12,7 @@ path = "src/main.rs"
 [dependencies]
 kivc = { workspace = true }
 kivc-ast = { workspace = true }
+kivc-lexer = { workspace = true }
+kivc-parser = { workspace = true }
 kivc-span = { workspace = true }
 clap = { workspace = true }

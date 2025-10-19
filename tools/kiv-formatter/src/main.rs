@@ -3,12 +3,7 @@
 //! This crate provides code formatting functionality for the Kiv programming language.
 //! It can format Kiv source code according to a consistent style.
 
-mod formatter;
-
 use clap::Parser;
-use formatter::Formatter;
-use kivc::compile_to_ast;
-use kivc_span::SourceFile;
 use std::fs;
 use std::path::PathBuf;
 use std::process;
@@ -80,14 +75,8 @@ fn format_file(
     // Read the file
     let source = fs::read_to_string(path)?;
 
-    // Parse to AST
-    let file = SourceFile::new(path.to_string_lossy().to_string(), source.clone());
-    let ast = compile_to_ast(file)
-        .map_err(|diag| format!("Parse error: {} error(s)", diag.errors().len()))?;
-
-    // Format the AST
-    let mut formatter = Formatter::new();
-    let formatted = formatter.format_program(&ast);
+    // Format using the library function
+    let formatted = kiv_formatter::format_code(&source)?;
 
     // Check if formatting changed anything
     let already_formatted = source == formatted;

@@ -5,7 +5,9 @@ use crate::hir::{
 };
 use crate::id::{FunId, TypeId, VarId};
 use crate::scope::ScopeStack;
-use kivc_ast::{Block, Expr, ExprKind, FunDef, Program, Stmt, StmtKind, TypeKind};
+use kivc_ast::{
+    Block, Expr, ExprKind, FunDef, Pattern as AstPattern, Program, Stmt, StmtKind, TypeKind,
+};
 use kivc_diagnostics::{DiagnosticsCollector, KivError};
 
 /// Lowers an AST program to HIR
@@ -169,6 +171,35 @@ impl Lowerer {
                 value: value.map(|v| self.lower_expr(v)),
             },
 
+            StmtKind::While { condition, body } => {
+                let condition = self.lower_expr(condition);
+                let body = self.lower_block(body);
+                HirStmtKind::While { condition, body }
+            }
+
+            StmtKind::For {
+                variable,
+                iterable,
+                body,
+            } => {
+                self.scopes.push_scope();
+                let var_id = self.scopes.declare(variable.clone());
+                let iterable = self.lower_expr(iterable);
+                let body = self.lower_block(body);
+                self.scopes.pop_scope();
+
+                HirStmtKind::For {
+                    var_id,
+                    variable,
+                    iterable,
+                    body,
+                }
+            }
+
+            StmtKind::Break => HirStmtKind::Break,
+
+            StmtKind::Continue => HirStmtKind::Continue,
+
             StmtKind::Expr { expr } => HirStmtKind::Expr {
                 expr: self.lower_expr(expr),
             },
@@ -266,6 +297,24 @@ impl Lowerer {
                     else_branch: else_hir,
                 }
             }
+
+            ExprKind::Match { value, arms } => {
+                let value_hir = self.lower_expr(*value);
+                let arms_hir = arms
+                    .into_iter()
+                    .map(|arm| self.lower_match_arm(arm))
+                    .collect();
+
+                HirExprKind::Match {
+                    value: Box::new(value_hir),
+                    arms: arms_hir,
+                }
+            }
+
+            ExprKind::Block(block) => {
+                let block_hir = self.lower_block(block);
+                HirExprKind::Block(block_hir)
+            }
         };
 
         HirExpr::new(kind, span)
@@ -279,6 +328,37 @@ impl Lowerer {
             TypeKind::Bool => TypeId::new(2),
             TypeKind::Text => TypeId::new(3),
             TypeKind::Unit => TypeId::new(4),
+        }
+    }
+
+    fn lower_match_arm(&mut self, arm: kivc_ast::MatchArm) -> crate::hir::HirMatchArm {
+        self.scopes.push_scope();
+        let pattern = self.lower_pattern(arm.pattern);
+        let body = self.lower_expr(arm.body);
+        self.scopes.pop_scope();
+
+        crate::hir::HirMatchArm {
+            pattern,
+            body,
+            span: arm.span,
+        }
+    }
+
+    fn lower_pattern(&mut self, pattern: AstPattern) -> crate::hir::HirPattern {
+        match pattern {
+            AstPattern::Wildcard => crate::hir::HirPattern::Wildcard,
+            AstPattern::Literal(lit) => crate::hir::HirPattern::Literal(lit),
+            AstPattern::Binding(name) => {
+                let var_id = self.scopes.declare(name.clone());
+                crate::hir::HirPattern::Binding { var_id, name }
+            }
+            AstPattern::Or(patterns) => {
+                let patterns_hir = patterns
+                    .into_iter()
+                    .map(|p| self.lower_pattern(p))
+                    .collect();
+                crate::hir::HirPattern::Or(patterns_hir)
+            }
         }
     }
 }
