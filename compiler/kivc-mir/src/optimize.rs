@@ -51,15 +51,13 @@ fn constant_fold_function(function: &mut MirFunction) {
                 left,
                 right,
             } = instr
+                && let (MirOperand::Literal(l_lit), MirOperand::Literal(r_lit)) = (left, right)
+                && let Some(result) = fold_binary_op(*op, l_lit, r_lit)
             {
-                if let (MirOperand::Literal(l_lit), MirOperand::Literal(r_lit)) = (left, right) {
-                    if let Some(result) = fold_binary_op(*op, l_lit, r_lit) {
-                        *instr = MirInstr::Assign {
-                            dest: *dest,
-                            source: MirOperand::Literal(result),
-                        };
-                    }
-                }
+                *instr = MirInstr::Assign {
+                    dest: *dest,
+                    source: MirOperand::Literal(result),
+                };
             }
         }
     }
@@ -131,14 +129,14 @@ fn dead_code_elimination(function: &mut MirFunction) {
             for instr in block.instructions.iter().rev() {
                 match instr {
                     MirInstr::Assign { dest, source } => {
-                        if used_vars.contains(&dest) {
+                        if used_vars.contains(dest) {
                             changed |= mark_operand_used(source, &mut used_vars);
                         }
                     }
                     MirInstr::BinOp {
                         dest, left, right, ..
                     } => {
-                        if used_vars.contains(&dest) {
+                        if used_vars.contains(dest) {
                             changed |= mark_operand_used(left, &mut used_vars);
                             changed |= mark_operand_used(right, &mut used_vars);
                         }
@@ -148,7 +146,7 @@ fn dead_code_elimination(function: &mut MirFunction) {
                         args,
                         ..
                     } => {
-                        if used_vars.contains(&dest) {
+                        if used_vars.contains(dest) {
                             for arg in args {
                                 changed |= mark_operand_used(arg, &mut used_vars);
                             }
@@ -173,11 +171,11 @@ fn dead_code_elimination(function: &mut MirFunction) {
         block.instructions.retain(|instr| {
             match instr {
                 MirInstr::Assign { dest, .. } | MirInstr::BinOp { dest, .. } => {
-                    used_vars.contains(&dest)
+                    used_vars.contains(dest)
                 }
                 MirInstr::Call {
                     dest: Some(dest), ..
-                } => used_vars.contains(&dest),
+                } => used_vars.contains(dest),
                 MirInstr::Call { dest: None, .. } => true, // Keep side-effecting calls
                 MirInstr::Nop => false,
             }

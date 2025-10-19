@@ -19,13 +19,13 @@
 //! let llvm_ir = generate_llvm_ir(&context, &mir_program)?;
 //! ```
 
-mod error;
 mod backend;
+mod error;
 mod runtime_bindings;
 mod types;
 
-pub use error::{CodegenError, CodegenResult};
 pub use backend::CodegenContext;
+pub use error::{CodegenError, CodegenResult};
 
 use inkwell::context::Context;
 use kivc_mir::MirProgram;

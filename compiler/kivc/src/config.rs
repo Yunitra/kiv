@@ -1,20 +1,15 @@
 //! Compiler configuration.
 
 /// Optimization level
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum OptLevel {
     /// No optimization (debug builds)
+    #[default]
     None,
     /// Basic optimizations
     Basic,
     /// Aggressive optimizations
     Aggressive,
-}
-
-impl Default for OptLevel {
-    fn default() -> Self {
-        Self::None
-    }
 }
 
 /// Compiler configuration

@@ -1,11 +1,11 @@
 //! Type checker modules.
 
-mod checker;
+mod context;
 mod expr;
 mod inference;
 mod stmt;
 
-pub use checker::TypeChecker;
+pub use context::TypeChecker;
 
 use kivc_diagnostics::DiagnosticsCollector;
 use kivc_hir::HirProgram;

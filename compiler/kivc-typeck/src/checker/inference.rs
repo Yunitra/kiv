@@ -1,6 +1,6 @@
 //! Type inference.
 
-use super::checker::TypeChecker;
+use super::context::TypeChecker;
 use crate::types::Type;
 use kivc_hir::{HirExpr, HirExprKind, TypeId};
 

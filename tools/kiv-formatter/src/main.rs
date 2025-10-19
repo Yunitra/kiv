@@ -76,10 +76,7 @@ fn format_file(
     let source = fs::read_to_string(path)?;
 
     // Format using the library function
-    let formatted = match kiv_formatter::format_code(&source) {
-        Ok(f) => f,
-        Err(e) => return Err(e.into()),
-    };
+    let formatted = kiv_formatter::format_code(&source)?;
 
     // Check if formatting changed anything
     let already_formatted = source == formatted;

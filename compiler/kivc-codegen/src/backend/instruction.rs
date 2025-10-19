@@ -77,19 +77,20 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
 
             // Add space between arguments (except first)
             if i > 0 {
-                let space_fn = self.module.get_function("kiv_print_text").ok_or_else(|| {
-                    CodegenError::UndefinedFunction("kiv_print_text".to_string())
-                })?;
+                let space_fn = self
+                    .module
+                    .get_function("kiv_print_text")
+                    .ok_or_else(|| CodegenError::UndefinedFunction("kiv_print_text".to_string()))?;
                 let space_str = self
                     .builder
                     .build_global_string_ptr(" ", "space")
                     .map_err(|e| CodegenError::LlvmError(e.to_string()))?;
-                let space_text_fn = self
-                    .module
-                    .get_function("kiv_text_from_cstr")
-                    .ok_or_else(|| {
-                        CodegenError::UndefinedFunction("kiv_text_from_cstr".to_string())
-                    })?;
+                let space_text_fn =
+                    self.module
+                        .get_function("kiv_text_from_cstr")
+                        .ok_or_else(|| {
+                            CodegenError::UndefinedFunction("kiv_text_from_cstr".to_string())
+                        })?;
                 let space_text = self
                     .builder
                     .build_call(
@@ -117,9 +118,10 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
                 "kiv_print_int" // fallback
             };
 
-            let print_fn = self.module.get_function(print_fn_name).ok_or_else(|| {
-                CodegenError::UndefinedFunction(print_fn_name.to_string())
-            })?;
+            let print_fn = self
+                .module
+                .get_function(print_fn_name)
+                .ok_or_else(|| CodegenError::UndefinedFunction(print_fn_name.to_string()))?;
 
             self.builder
                 .build_call(print_fn, &[arg_value.into()], "")
@@ -153,10 +155,7 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
         };
 
         let function = self.module.get_function(runtime_func_name).ok_or_else(|| {
-            CodegenError::UndefinedFunction(format!(
-                "{} (mapped from {})",
-                runtime_func_name, func
-            ))
+            CodegenError::UndefinedFunction(format!("{} (mapped from {})", runtime_func_name, func))
         })?;
 
         let arg_values: Vec<_> = args

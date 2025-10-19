@@ -1,6 +1,6 @@
 //! Expression type checking.
 
-use super::checker::TypeChecker;
+use super::context::TypeChecker;
 use crate::types::Type;
 use kivc_diagnostics::KivError;
 use kivc_hir::{HirExpr, HirExprKind};

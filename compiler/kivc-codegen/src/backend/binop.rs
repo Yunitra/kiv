@@ -2,8 +2,8 @@
 
 use super::codegen::LlvmCodegen;
 use crate::error::{CodegenError, CodegenResult};
-use inkwell::values::BasicValueEnum;
 use inkwell::IntPredicate;
+use inkwell::values::BasicValueEnum;
 use kivc_ast::BinOp;
 
 impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {

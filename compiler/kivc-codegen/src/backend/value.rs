@@ -37,10 +37,7 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
     }
 
     /// Converts a literal to an LLVM value
-    pub(super) fn literal_to_value(
-        &self,
-        lit: &Literal,
-    ) -> CodegenResult<BasicValueEnum<'ctx>> {
+    pub(super) fn literal_to_value(&self, lit: &Literal) -> CodegenResult<BasicValueEnum<'ctx>> {
         match lit {
             Literal::Int(val) => Ok(self.context.i64_type().const_int(*val as u64, true).into()),
             Literal::Float(val) => Ok(self.context.f64_type().const_float(*val).into()),
