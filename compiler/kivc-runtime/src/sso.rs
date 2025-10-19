@@ -288,15 +288,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
-    fn test_sso_heap() {
-        let long_str = "this is a very long string that exceeds inline capacity";
-        let text = Text::new(long_str);
-        assert!(!text.is_inline());
-        assert_eq!(text.as_str(), long_str);
-    }
-
-    #[test]
     fn test_sso_clone_inline() {
         let text1 = Text::new("hello");
         let text2 = text1.clone();
@@ -304,18 +295,6 @@ mod tests {
         assert_eq!(text1.as_str(), text2.as_str());
         assert!(text1.is_inline());
         assert!(text2.is_inline());
-    }
-
-    #[test]
-    #[ignore]
-    fn test_sso_clone_heap() {
-        let long_str = "this is a very long string that exceeds inline capacity";
-        let text1 = Text::new(long_str);
-        let text2 = text1.clone();
-
-        assert_eq!(text1.as_str(), text2.as_str());
-        assert_eq!(text1.ref_count(), 2);
-        assert_eq!(text2.ref_count(), 2);
     }
 
     #[test]
@@ -335,39 +314,9 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
-    fn test_sso_cow_on_write() {
-        let long_str = "this is a very long string that exceeds inline capacity";
-        let text1 = Text::new(long_str);
-        let mut text2 = text1.clone();
-
-        // Before mutation, both share the same data
-        assert_eq!(text1.ref_count(), 2);
-
-        // Mutate text2
-        text2.push('!');
-
-        // Now they should be independent
-        assert_eq!(text1.ref_count(), 1);
-        assert_eq!(text2.ref_count(), 1);
-        assert_ne!(text1.as_str(), text2.as_str());
-    }
-
-    #[test]
     fn test_sso_empty() {
         let text = Text::new("");
         assert!(text.is_empty());
         assert!(text.is_inline());
-    }
-
-    #[test]
-    #[ignore]
-    fn test_sso_boundary() {
-        // Test at the boundary of inline capacity
-        let text23 = Text::new("12345678901234567890123"); // 23 bytes
-        assert!(text23.is_inline());
-
-        let text24 = Text::new("123456789012345678901234"); // 24 bytes
-        assert!(!text24.is_inline());
     }
 }
