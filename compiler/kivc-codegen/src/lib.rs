@@ -20,12 +20,12 @@
 //! ```
 
 mod error;
-mod llvm_backend;
+mod backend;
 mod runtime_bindings;
 mod types;
 
 pub use error::{CodegenError, CodegenResult};
-pub use llvm_backend::CodegenContext;
+pub use backend::CodegenContext;
 
 use inkwell::context::Context;
 use kivc_mir::MirProgram;
@@ -35,7 +35,7 @@ pub fn generate_llvm_ir(program: &MirProgram) -> CodegenResult<String> {
     let context = Context::create();
     let codegen_ctx = CodegenContext::new(&context, "kiv_module");
 
-    llvm_backend::generate_llvm_ir(&codegen_ctx, program)?;
+    backend::generate_llvm_ir(&codegen_ctx, program)?;
 
     let mut ir = codegen_ctx.to_llvm_ir();
 
