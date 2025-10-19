@@ -9,8 +9,10 @@
 
 mod builtins;
 mod rc;
+mod sso;
 mod text;
 
 pub use builtins::*;
 pub use rc::Rc;
+pub use sso::Text as SsoText;
 pub use text::Text;

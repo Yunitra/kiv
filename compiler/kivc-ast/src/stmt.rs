@@ -40,6 +40,22 @@ pub enum StmtKind {
     /// Return statement: return [value];
     Return { value: Option<Expr> },
 
+    /// While loop: while condition { body }
+    While { condition: Expr, body: Block },
+
+    /// For loop: for variable in iterable { body }
+    For {
+        variable: String,
+        iterable: Expr,
+        body: Block,
+    },
+
+    /// Break statement: break;
+    Break,
+
+    /// Continue statement: continue;
+    Continue,
+
     /// Expression statement
     Expr { expr: Expr },
 }
@@ -76,6 +92,33 @@ impl Stmt {
     /// Creates an expression statement
     pub fn expr_stmt(expr: Expr, span: Span) -> Self {
         Self::new(StmtKind::Expr { expr }, span)
+    }
+
+    /// Creates a while statement
+    pub fn while_stmt(condition: Expr, body: Block, span: Span) -> Self {
+        Self::new(StmtKind::While { condition, body }, span)
+    }
+
+    /// Creates a for statement
+    pub fn for_stmt(variable: String, iterable: Expr, body: Block, span: Span) -> Self {
+        Self::new(
+            StmtKind::For {
+                variable,
+                iterable,
+                body,
+            },
+            span,
+        )
+    }
+
+    /// Creates a break statement
+    pub fn break_stmt(span: Span) -> Self {
+        Self::new(StmtKind::Break, span)
+    }
+
+    /// Creates a continue statement
+    pub fn continue_stmt(span: Span) -> Self {
+        Self::new(StmtKind::Continue, span)
     }
 }
 

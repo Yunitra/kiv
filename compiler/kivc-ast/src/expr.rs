@@ -56,6 +56,12 @@ pub enum ExprKind {
         else_branch: Option<Block>,
     },
 
+    /// Match expression: match value { patterns }
+    Match {
+        value: Box<Expr>,
+        arms: Vec<MatchArm>,
+    },
+
     /// Variable reference
     Var { name: String },
 
@@ -64,6 +70,33 @@ pub enum ExprKind {
 
     /// Assignment
     Assign { target: String, value: Box<Expr> },
+
+    /// Block expression: { stmts }
+    Block(Block),
+}
+
+/// A match arm: pattern => body
+#[derive(Debug, Clone)]
+pub struct MatchArm {
+    pub pattern: Pattern,
+    pub body: Expr,
+    pub span: Span,
+}
+
+/// A pattern in a match expression
+#[derive(Debug, Clone, PartialEq)]
+pub enum Pattern {
+    /// Wildcard pattern: _
+    Wildcard,
+
+    /// Literal pattern: 42, "hello", true, etc.
+    Literal(Literal),
+
+    /// Variable binding: x
+    Binding(String),
+
+    /// Or pattern: 1 | 2 | 3
+    Or(Vec<Pattern>),
 }
 
 impl Expr {
@@ -120,6 +153,33 @@ impl Expr {
             },
             span,
         )
+    }
+
+    /// Creates a match expression
+    pub fn match_expr(value: Expr, arms: Vec<MatchArm>, span: Span) -> Self {
+        Self::new(
+            ExprKind::Match {
+                value: Box::new(value),
+                arms,
+            },
+            span,
+        )
+    }
+
+    /// Creates a block expression
+    pub fn block_expr(block: Block, span: Span) -> Self {
+        Self::new(ExprKind::Block(block), span)
+    }
+}
+
+impl MatchArm {
+    /// Creates a new match arm
+    pub fn new(pattern: Pattern, body: Expr, span: Span) -> Self {
+        Self {
+            pattern,
+            body,
+            span,
+        }
     }
 }
 
