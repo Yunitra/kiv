@@ -2,8 +2,6 @@
 //!
 //! Static analysis tool for Kiv code that detects common issues and enforces best practices.
 
-mod lint;
-
 use clap::Parser;
 use kivc::{CompileResult, CompilerConfig, StopAfter, compile_source};
 use kivc_diagnostics::DiagnosticsCollector;
