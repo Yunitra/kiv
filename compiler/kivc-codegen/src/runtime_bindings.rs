@@ -50,10 +50,7 @@ pub fn declare_runtime_functions<'ctx>(context: &'ctx Context, module: &Module<'
             "kiv_print_bool",
             void_type.fn_type(&[bool_type.into()], false),
         ),
-        (
-            "kiv_print_newline",
-            void_type.fn_type(&[], false),
-        ),
+        ("kiv_print_newline", void_type.fn_type(&[], false)),
         (
             "kiv_int_to_text",
             ptr_type.fn_type(&[i64_type.into()], false),

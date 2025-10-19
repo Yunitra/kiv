@@ -28,7 +28,7 @@ fn test_mir_simple_function() {
     let mir = parse_lower_typecheck_and_mir(source);
     assert_eq!(mir.functions.len(), 1);
     assert_eq!(mir.functions[0].name, "main");
-    assert!(mir.functions[0].blocks.len() >= 1);
+    assert!(!mir.functions[0].blocks.is_empty());
 }
 
 #[test]

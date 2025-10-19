@@ -19,7 +19,7 @@ pub struct MirFunction {
     pub id: FunId,
     pub name: String,
     pub params: Vec<VarId>,
-    pub param_types: Vec<TypeId>,  // NEW: parameter types
+    pub param_types: Vec<TypeId>, // NEW: parameter types
     pub return_type: Option<TypeId>,
     pub blocks: Vec<BasicBlock>,
     pub entry_block: BlockId,
@@ -86,7 +86,10 @@ pub enum MirTerminator {
 impl MirProgram {
     /// Creates a new MIR program
     pub fn new(functions: Vec<MirFunction>, type_table: HashMap<TypeId, Type>) -> Self {
-        Self { functions, type_table }
+        Self {
+            functions,
+            type_table,
+        }
     }
 }
 

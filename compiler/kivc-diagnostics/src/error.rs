@@ -121,6 +121,17 @@ impl KivError {
             help,
         }
     }
+
+    /// Creates a warning (represented as a syntax error with a special code)
+    pub fn warning(span: Span, message: impl Into<String>, help: impl Into<String>) -> Self {
+        Self::syntax(
+            &span,
+            message,
+            "warning",
+            Some(help.into()),
+            ErrorCode::new("lint", 0),
+        )
+    }
 }
 
 // Manual Debug implementation to handle the non-Debug SourceCode trait object

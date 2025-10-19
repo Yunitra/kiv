@@ -6,16 +6,16 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-text-size.workspace = true
-inkwell.workspace = true
-thiserror.workspace = true
+inkwell = { workspace = true }
+thiserror = { workspace = true }
+text-size = { workspace = true }
 
-kivc-span.workspace = true
-kivc-diagnostics.workspace = true
-kivc-ast.workspace = true
-kivc-mir.workspace = true
-kivc-typeck.workspace = true
-kivc-hir.workspace = true
+kivc-span = { workspace = true }
+kivc-diagnostics = { workspace = true }
+kivc-ast = { workspace = true }
+kivc-mir = { workspace = true }
+kivc-typeck = { workspace = true }
+kivc-hir = { workspace = true }
 
 [dev-dependencies]
-kivc-parser.workspace = true
+kivc-parser = { workspace = true }

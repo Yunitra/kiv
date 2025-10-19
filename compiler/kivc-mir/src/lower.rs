@@ -73,8 +73,14 @@ impl MirLowerer {
         let params = fun.params.iter().map(|p| p.var_id).collect();
         let param_types = fun.params.iter().map(|p| p.ty).collect();
 
-        let mut mir_fun =
-            MirFunction::new(fun.id, fun.name, params, param_types, fun.return_type, entry_block_id);
+        let mut mir_fun = MirFunction::new(
+            fun.id,
+            fun.name,
+            params,
+            param_types,
+            fun.return_type,
+            entry_block_id,
+        );
 
         // Lower the function body
         let (entry_block, _) = self.lower_block(fun.body, entry_block_id, None);

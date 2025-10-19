@@ -9,7 +9,7 @@ pub mod session;
 
 // Re-exports for convenience
 pub use compiler::{CompileResult, compile_source, compile_to_ast, compile_to_hir, compile_to_mir};
-pub use config::{CompilerConfig, OptLevel};
+pub use config::{CompilerConfig, OptLevel, StopAfter};
 pub use session::CompilerSession;
 
 // Re-export diagnostic types

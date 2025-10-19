@@ -6,9 +6,9 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-miette.workspace = true
-thiserror.workspace = true
+miette = { workspace = true }
+thiserror = { workspace = true }
 
-kivc-span.workspace = true
+kivc-span = { workspace = true }
 
 [dev-dependencies]

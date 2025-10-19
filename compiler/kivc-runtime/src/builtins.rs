@@ -99,10 +99,10 @@ mod tests {
 
     #[test]
     fn test_float_to_text() {
-        let text_ptr = kiv_float_to_text(3.14);
+        let text_ptr = kiv_float_to_text(2.71);
         unsafe {
             let text = &*text_ptr;
-            assert!(text.as_str().unwrap().starts_with("3.14"));
+            assert!(text.as_str().unwrap().starts_with("2.71"));
             let _ = Box::from_raw(text_ptr); // Clean up
         }
     }

@@ -53,9 +53,9 @@ fn test_integers() {
 
 #[test]
 fn test_floats() {
-    let tokens = lex_source("3.14 0.5 123.456");
+    let tokens = lex_source("2.71 0.5 123.456");
     assert_eq!(tokens.len(), 3);
-    assert!(matches!(tokens[0].kind, TokenKind::FloatLit(f) if (f - 3.14).abs() < 0.001));
+    assert!(matches!(tokens[0].kind, TokenKind::FloatLit(f) if (f - 2.71).abs() < 0.001));
     assert!(matches!(tokens[1].kind, TokenKind::FloatLit(f) if (f - 0.5).abs() < 0.001));
     assert!(matches!(tokens[2].kind, TokenKind::FloatLit(f) if (f - 123.456).abs() < 0.001));
 }

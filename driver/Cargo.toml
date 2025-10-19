@@ -8,3 +8,13 @@ license.workspace = true
 [[bin]]
 name = "kiv"
 path = "src/main.rs"
+
+[dependencies]
+kivc = { path = "../compiler/kivc" }
+kivc-span = { workspace = true }
+kivc-diagnostics = { workspace = true }
+clap = { workspace = true }
+miette = { workspace = true }
+thiserror = { workspace = true }
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"

@@ -1,19 +1,19 @@
 [package]
-name = "kiv-lsp"
+name = "kiv-clippy"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "kiv-lsp"
+name = "kiv-clippy"
 path = "src/main.rs"
 
 [dependencies]
 kivc = { workspace = true }
+kivc-ast = { workspace = true }
+kivc-hir = { workspace = true }
 kivc-span = { workspace = true }
 kivc-diagnostics = { workspace = true }
-tower-lsp = { workspace = true }
-tokio = { workspace = true }
-serde_json = { workspace = true }
-env_logger = { workspace = true }
+clap = { workspace = true }
+miette = { workspace = true }

@@ -8,3 +8,9 @@ license.workspace = true
 [[bin]]
 name = "kiv-fmt"
 path = "src/main.rs"
+
+[dependencies]
+kivc = { workspace = true }
+kivc-ast = { workspace = true }
+kivc-span = { workspace = true }
+clap = { workspace = true }

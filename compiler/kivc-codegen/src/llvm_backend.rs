@@ -102,9 +102,14 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
         Ok(())
     }
 
-    fn declare_function(&self, func: &MirFunction, type_table: &HashMap<TypeId, Type>) -> CodegenResult<FunctionValue<'ctx>> {
+    fn declare_function(
+        &self,
+        func: &MirFunction,
+        type_table: &HashMap<TypeId, Type>,
+    ) -> CodegenResult<FunctionValue<'ctx>> {
         // Map parameter types
-        let param_types: Vec<_> = func.param_types
+        let param_types: Vec<_> = func
+            .param_types
             .iter()
             .map(|tid| {
                 let ty = type_table.get(tid).unwrap_or(&Type::Unknown);
@@ -115,9 +120,8 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
         let fn_type = if let Some(ret_tid) = func.return_type {
             let ret_ty = type_table.get(&ret_tid).unwrap_or(&Type::Unknown);
             // Get the actual LLVM type and call fn_type on it
-            match crate::types::type_to_llvm(self.context, ret_ty)? {
-                ty => ty.fn_type(&param_types, false)
-            }
+            let ty = crate::types::type_to_llvm(self.context, ret_ty)?;
+            ty.fn_type(&param_types, false)
         } else {
             self.context.void_type().fn_type(&param_types, false)
         };
@@ -201,29 +205,41 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
                     // print() supports multiple arguments - print each one, then newline
                     for (i, arg) in args.iter().enumerate() {
                         let arg_value = self.operand_to_value(arg, variables)?;
-                        
+
                         // Add space between arguments (except first)
                         if i > 0 {
-                            let space_fn = self.module.get_function("kiv_print_text").ok_or_else(|| {
-                                CodegenError::UndefinedFunction("kiv_print_text".to_string())
-                            })?;
-                            let space_str = self.builder.build_global_string_ptr(" ", "space")
+                            let space_fn =
+                                self.module.get_function("kiv_print_text").ok_or_else(|| {
+                                    CodegenError::UndefinedFunction("kiv_print_text".to_string())
+                                })?;
+                            let space_str = self
+                                .builder
+                                .build_global_string_ptr(" ", "space")
                                 .map_err(|e| CodegenError::LlvmError(e.to_string()))?;
-                            let space_text_fn = self.module.get_function("kiv_text_from_cstr").ok_or_else(|| {
-                                CodegenError::UndefinedFunction("kiv_text_from_cstr".to_string())
-                            })?;
-                            let space_text = self.builder.build_call(
-                                space_text_fn,
-                                &[space_str.as_pointer_value().into()],
-                                "space_text"
-                            ).map_err(|e| CodegenError::LlvmError(e.to_string()))?
+                            let space_text_fn = self
+                                .module
+                                .get_function("kiv_text_from_cstr")
+                                .ok_or_else(|| {
+                                    CodegenError::UndefinedFunction(
+                                        "kiv_text_from_cstr".to_string(),
+                                    )
+                                })?;
+                            let space_text = self
+                                .builder
+                                .build_call(
+                                    space_text_fn,
+                                    &[space_str.as_pointer_value().into()],
+                                    "space_text",
+                                )
+                                .map_err(|e| CodegenError::LlvmError(e.to_string()))?
                                 .try_as_basic_value()
                                 .left()
                                 .unwrap();
-                            self.builder.build_call(space_fn, &[space_text.into()], "")
+                            self.builder
+                                .build_call(space_fn, &[space_text.into()], "")
                                 .map_err(|e| CodegenError::LlvmError(e.to_string()))?;
                         }
-                        
+
                         // Determine print function based on type
                         let print_fn_name = if arg_value.is_int_value() {
                             "kiv_print_int"
@@ -234,21 +250,26 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
                         } else {
                             "kiv_print_int" // fallback
                         };
-                        
-                        let print_fn = self.module.get_function(print_fn_name).ok_or_else(|| {
-                            CodegenError::UndefinedFunction(print_fn_name.to_string())
-                        })?;
-                        
+
+                        let print_fn =
+                            self.module.get_function(print_fn_name).ok_or_else(|| {
+                                CodegenError::UndefinedFunction(print_fn_name.to_string())
+                            })?;
+
                         self.builder
                             .build_call(print_fn, &[arg_value.into()], "")
                             .map_err(|e| CodegenError::LlvmError(e.to_string()))?;
                     }
-                    
+
                     // Print newline at the end
-                    let newline_fn = self.module.get_function("kiv_print_newline").ok_or_else(|| {
-                        CodegenError::UndefinedFunction("kiv_print_newline".to_string())
-                    })?;
-                    self.builder.build_call(newline_fn, &[], "")
+                    let newline_fn =
+                        self.module
+                            .get_function("kiv_print_newline")
+                            .ok_or_else(|| {
+                                CodegenError::UndefinedFunction("kiv_print_newline".to_string())
+                            })?;
+                    self.builder
+                        .build_call(newline_fn, &[], "")
                         .map_err(|e| CodegenError::LlvmError(e.to_string()))?;
                 } else {
                     // Handle other function calls
@@ -257,12 +278,13 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
                         other => other,
                     };
 
-                    let function = self.module.get_function(runtime_func_name).ok_or_else(|| {
-                        CodegenError::UndefinedFunction(format!(
-                            "{} (mapped from {})",
-                            runtime_func_name, func
-                        ))
-                    })?;
+                    let function =
+                        self.module.get_function(runtime_func_name).ok_or_else(|| {
+                            CodegenError::UndefinedFunction(format!(
+                                "{} (mapped from {})",
+                                runtime_func_name, func
+                            ))
+                        })?;
 
                     let arg_values: Vec<_> = args
                         .iter()
@@ -379,22 +401,35 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
                 .into()),
             Literal::Text(s) => {
                 // Create a global string constant
-                let global_str = self.builder.build_global_string_ptr(s, "str")
+                let global_str = self
+                    .builder
+                    .build_global_string_ptr(s, "str")
                     .map_err(|e| CodegenError::LlvmError(e.to_string()))?;
-                
+
                 // Call kiv_text_from_cstr to create Text object
-                let text_from_cstr = self.module.get_function("kiv_text_from_cstr")
-                    .ok_or_else(|| CodegenError::UndefinedFunction("kiv_text_from_cstr".to_string()))?;
-                
-                let text_ptr = self.builder.build_call(
-                    text_from_cstr,
-                    &[global_str.as_pointer_value().into()],
-                    "text"
-                ).map_err(|e| CodegenError::LlvmError(e.to_string()))?
+                let text_from_cstr =
+                    self.module
+                        .get_function("kiv_text_from_cstr")
+                        .ok_or_else(|| {
+                            CodegenError::UndefinedFunction("kiv_text_from_cstr".to_string())
+                        })?;
+
+                let text_ptr = self
+                    .builder
+                    .build_call(
+                        text_from_cstr,
+                        &[global_str.as_pointer_value().into()],
+                        "text",
+                    )
+                    .map_err(|e| CodegenError::LlvmError(e.to_string()))?
                     .try_as_basic_value()
                     .left()
-                    .ok_or_else(|| CodegenError::General("kiv_text_from_cstr should return a value".to_string()))?;
-                
+                    .ok_or_else(|| {
+                        CodegenError::General(
+                            "kiv_text_from_cstr should return a value".to_string(),
+                        )
+                    })?;
+
                 Ok(text_ptr)
             }
             Literal::Unit => Ok(self.context.i64_type().const_zero().into()),

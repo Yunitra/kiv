@@ -6,6 +6,6 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-text-size.workspace = true
+text-size = { workspace = true }
 
 [dev-dependencies]

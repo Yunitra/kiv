@@ -6,9 +6,9 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-kivc-span.workspace = true
-kivc-diagnostics.workspace = true
-kivc-ast.workspace = true
+kivc-span = { workspace = true }
+kivc-diagnostics = { workspace = true }
+kivc-ast = { workspace = true }
 
 [dev-dependencies]
-kivc-parser.workspace = true
+kivc-parser = { workspace = true }

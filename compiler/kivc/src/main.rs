@@ -121,7 +121,7 @@ fn main() {
                                                     "⚠ Runtime library not found. Building kivc-runtime..."
                                                 );
                                                 let _ = std::process::Command::new("cargo")
-                                                    .args(&["build", "--package", "kivc-runtime"])
+                                                    .args(["build", "--package", "kivc-runtime"])
                                                     .output();
                                             }
 
