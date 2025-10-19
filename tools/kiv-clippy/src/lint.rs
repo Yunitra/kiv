@@ -281,16 +281,16 @@ fn check_redundant_else_in_expr(expr: &HirExpr, diagnostics: &mut DiagnosticsCol
             ..
         } => {
             // Check if then branch always returns
-            if let Some(else_branch) = else_branch
-                && block_always_returns(then_branch)
-            {
-                let error = KivError::warning(
-                    else_branch.span.clone(),
-                    "redundant else block".to_string(),
-                    "the `else` block is unnecessary because the `if` block always returns"
-                        .to_string(),
-                );
-                diagnostics.add(error);
+            if let Some(else_branch) = else_branch {
+                if block_always_returns(then_branch) {
+                    let error = KivError::warning(
+                        else_branch.span.clone(),
+                        "redundant else block".to_string(),
+                        "the `else` block is unnecessary because the `if` block always returns"
+                            .to_string(),
+                    );
+                    diagnostics.add(error);
+                }
             }
 
             // Recursively check

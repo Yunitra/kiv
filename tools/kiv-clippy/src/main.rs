@@ -5,7 +5,7 @@
 mod lint;
 
 use clap::Parser;
-use kivc::{CompileResult, CompilerConfig, StopAfter, compile_source};
+use kivc::{compile_source, CompileResult, CompilerConfig, StopAfter};
 use kivc_diagnostics::DiagnosticsCollector;
 use lint::all_rules;
 use std::fs;

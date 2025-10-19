@@ -8,7 +8,7 @@ pub mod config;
 pub mod session;
 
 // Re-exports for convenience
-pub use compiler::{CompileResult, compile_source, compile_to_ast, compile_to_hir, compile_to_mir};
+pub use compiler::{compile_source, compile_to_ast, compile_to_hir, compile_to_mir, CompileResult};
 pub use config::{CompilerConfig, OptLevel, StopAfter};
 pub use session::CompilerSession;
 

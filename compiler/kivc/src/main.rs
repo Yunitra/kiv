@@ -3,7 +3,7 @@
 //! This is the command-line interface for the Kiv compiler (kivc).
 
 use clap::{Parser, Subcommand};
-use kivc::{CompileResult, CompilerConfig, OptLevel, compile_source};
+use kivc::{compile_source, CompileResult, CompilerConfig, OptLevel};
 use std::path::PathBuf;
 
 #[derive(Parser)]

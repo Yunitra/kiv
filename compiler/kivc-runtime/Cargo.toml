@@ -9,3 +9,7 @@ license.workspace = true
 crate-type = ["rlib", "staticlib", "cdylib"]
 
 [dependencies]
+
+[features]
+default = []
+c-runtime = []

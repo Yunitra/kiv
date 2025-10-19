@@ -1,7 +1,7 @@
 //! Identifier and keyword lexing.
 
 use super::cursor::LexerCursor;
-use crate::token::{TokenKind, keyword_or_ident};
+use crate::token::{keyword_or_ident, TokenKind};
 
 /// Lexes an identifier or keyword
 pub fn lex_identifier(cursor: &mut LexerCursor) -> TokenKind {

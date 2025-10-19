@@ -2,12 +2,12 @@
 
 use crate::error::{CodegenError, CodegenResult};
 use crate::runtime_bindings::declare_runtime_functions;
-use inkwell::IntPredicate;
 use inkwell::builder::Builder;
 use inkwell::context::Context;
 use inkwell::module::Module;
 use inkwell::types::BasicType;
 use inkwell::values::{BasicValueEnum, FunctionValue, PointerValue};
+use inkwell::IntPredicate;
 use kivc_ast::{BinOp, Literal};
 use kivc_hir::TypeId;
 use kivc_mir::{MirFunction, MirInstr, MirOperand, MirProgram, MirTerminator, VarId};

@@ -1,7 +1,7 @@
 //! `kiv check` command implementation.
 
 use crate::project::Project;
-use kivc::{CompileResult, CompilerConfig, StopAfter, compile_source};
+use kivc::{compile_source, CompileResult, CompilerConfig, StopAfter};
 use std::env;
 use std::fs;
 
