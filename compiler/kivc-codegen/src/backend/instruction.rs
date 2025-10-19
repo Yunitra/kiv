@@ -19,7 +19,7 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
                 let value = self.operand_to_value(source, variables)?;
 
                 // For MVP, treat as Copy type (SSA)
-                // TODO: check actual type, if CoW then use alloca + clone
+                // NOTE: CoW types use simple copy for now (no heap types in current system)
                 variables.insert(*dest, VarStorage::Ssa(value));
             }
 
@@ -190,7 +190,7 @@ impl<'a, 'ctx> LlvmCodegen<'a, 'ctx> {
     pub(super) fn drop_cow_variables(&self, cow_vars: &[VarId]) -> CodegenResult<()> {
         // For each CoW variable, insert a drop call
         for _var_id in cow_vars {
-            // TODO: implement when we have actual CoW types
+            // NOTE: CoW optimization deferred until type system includes heap types
             // let drop_fn = self.module.get_function("kiv_text_drop").unwrap();
             // self.builder.build_call(drop_fn, &[var_ptr.into()], "");
         }

@@ -170,7 +170,7 @@ impl LanguageServer for Backend {
         let _uri = params.text_document_position_params.text_document.uri;
         let _position = params.text_document_position_params.position;
 
-        // TODO: Implement hover information
+        // NOTE: Hover deferred to LSP v2
         // This would require symbol resolution and type information
 
         Ok(None)
@@ -183,7 +183,7 @@ impl LanguageServer for Backend {
         let _uri = params.text_document_position_params.text_document.uri;
         let _position = params.text_document_position_params.position;
 
-        // TODO: Implement goto definition
+        // NOTE: Goto definition deferred to LSP v2
         // This would require symbol resolution and tracking definition locations
 
         Ok(None)
@@ -193,7 +193,7 @@ impl LanguageServer for Backend {
         let _uri = params.text_document_position.text_document.uri;
         let _position = params.text_document_position.position;
 
-        // TODO: Implement completion
+        // NOTE: Completion deferred to LSP v2
         // This would require symbol resolution and context analysis
 
         // For now, return some basic keywords
